@@ -18,16 +18,28 @@
 #         self.right = right
 class Solution:
     def rob(self, root: Optional[TreeNode]) -> int:
-        # f1(node) 表示选中 node 时，能够盗取的最高金额
-        # f2(node) 表示不选 node 时，能够盗取的最高金额
-        # f1(node) = node.val + f2(node.left) + f2(node.right)
-        # f2(node) = max(f1(node.left)+f1(node.right), f1(node.left)+f2(node.right), f2(node.left)+f2(node.right), f2(node.left)+f1(node.right))
-
+        # r(node) 表示选中 node 时，能够盗取的最高金额
+        # l(node) 表示不选 node 时，能够盗取的最高金额
+        # r(node) = node.val + s(node.left) + s(node.right)
+        # s(node) = max(r(node.left)+r(node.right), r(node.left)+s(node.right), s(node.left)+r(node.right), s(node.left)+s(node.right))
+        # 直接返回两种值，跟定义两个方法相比，时间复杂度更低，相当于使用了备忘录
+        nodeMap = {}
+        
         def dfs(node):
             if node == None:
                 return 0, 0
-            res = 0
-            if node.left != None:
+            if node in nodeMap:
+                return nodeMap[node]
+
+            rl, sl = dfs(node.left)
+            rr, sr = dfs(node.right)
+            r = node.val + sl + sr
+            s = max(rl, sl) + max(rr, sr)
+            return r, s
+
+        r, s = dfs(root)
+        return max(r, s)
+
                 
 # @lc code=end
 
